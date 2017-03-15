@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 
 import Foundation
-import SKCore
+@_exported import SKCore
 
 public enum Endpoint: String {
     case apiTest = "api.test"
