@@ -104,7 +104,7 @@ public struct NetworkInterface {
         if parameters.count > 0 {
             components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
         }
-        guard let url = components?.url else {
+        guard let url = components?.url, let filename = parameters["filename"] as? String, let filetype = parameters["filetype"] as? String else {
             errorClosure(SlackError.clientNetworkError)
             return
         }
@@ -114,8 +114,8 @@ public struct NetworkInterface {
         let contentType = "multipart/form-data; boundary=" + boundaryConstant
         let boundaryStart = "--\(boundaryConstant)\r\n"
         let boundaryEnd = "--\(boundaryConstant)--\r\n"
-        let contentDispositionString = "Content-Disposition: form-data; name=\"file\"; filename=\"\(parameters["filename"])\"\r\n"
-        let contentTypeString = "Content-Type: \(parameters["filetype"])\r\n\r\n"
+        let contentDispositionString = "Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n"
+        let contentTypeString = "Content-Type: \(filetype)\r\n\r\n"
         
         guard let boundaryStartData = boundaryStart.data(using: .utf8), let dispositionData = contentDispositionString.data(using: .utf8), let contentTypeData = contentTypeString.data(using: .utf8), let boundaryEndData = boundaryEnd.data(using: .utf8) else {
             errorClosure(SlackError.clientNetworkError)
