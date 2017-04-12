@@ -37,7 +37,12 @@ public struct NetworkInterface {
     internal func request(_ endpoint: Endpoint, parameters: [String: Any?], successClosure: @escaping ([String: Any])->Void, errorClosure: @escaping (SlackError)->Void) {
         var components = URLComponents(string: "\(apiUrl)\(endpoint.rawValue)")
         if parameters.count > 0 {
+            //SR-2570: URLQueryItem doesn't escape spaces on linux https://bugs.swift.org/browse/SR-2570
+            #if os(Linux)
+            components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)".addingPercentEncoding(withAllowedCharacters: CharacterSet.whitespaces.inverted)) }
+            #else
             components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
+            #endif
         }
         guard let url = components?.url else {
             errorClosure(SlackError.clientNetworkError)
