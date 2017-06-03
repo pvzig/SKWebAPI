@@ -8,9 +8,6 @@
 
 A Swift module to help make requests to the [Slack Web API](https://api.slack.com/web).
 
-### Note About Emoji Characters
-On Linux, emoji characters currently cause `URLQueryItem` encoding to fail in some cases which will cause your `WebAPI` requests to fail silently. Until this is resolved, it is recommended that you use Slack’s text aliases such as `:100:` for 💯.
-
 ## Installation
 
 ### CocoaPods
