@@ -37,12 +37,7 @@ public struct NetworkInterface {
     internal func request(_ endpoint: Endpoint, parameters: [String: Any?], successClosure: @escaping ([String: Any])->Void, errorClosure: @escaping (SlackError)->Void) {
         var components = URLComponents(string: "\(apiUrl)\(endpoint.rawValue)")
         if parameters.count > 0 {
-            //SR-2570: URLQueryItem doesn't escape spaces on linux https://bugs.swift.org/browse/SR-2570
-            #if os(Linux)
-            components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)".addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)) }
-            #else
             components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
-            #endif
         }
         guard let url = components?.url else {
             errorClosure(SlackError.clientNetworkError)
@@ -63,12 +58,7 @@ public struct NetworkInterface {
     internal func synchronusRequest(_ endpoint: Endpoint, parameters: [String: Any?]) -> [String: Any]? {
         var components = URLComponents(string: "\(apiUrl)\(endpoint.rawValue)")
         if parameters.count > 0 {
-            //SR-2570: URLQueryItem doesn't escape spaces on linux https://bugs.swift.org/browse/SR-2570
-            #if os(Linux)
-            components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)".addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)) }
-            #else
             components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
-            #endif
         }
         guard let url = components?.url else {
             return nil
@@ -112,12 +102,7 @@ public struct NetworkInterface {
     internal func uploadRequest(data: Data, parameters: [String: Any?], successClosure: @escaping ([String: Any])->Void, errorClosure: @escaping (SlackError)->Void) {
         var components = URLComponents(string: "\(apiUrl)\(Endpoint.filesUpload.rawValue)")
         if parameters.count > 0 {
-            //SR-2570: URLQueryItem doesn't escape spaces on linux https://bugs.swift.org/browse/SR-2570
-            #if os(Linux)
-            components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)".addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)) }
-            #else
             components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
-            #endif
         }
         guard let url = components?.url, let filename = parameters["filename"] as? String, let filetype = parameters["filetype"] as? String else {
             errorClosure(SlackError.clientNetworkError)
