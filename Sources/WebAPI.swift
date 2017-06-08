@@ -217,6 +217,15 @@ public final class WebAPI {
         }
     }
     
+    public func sendThreadedMessage(channel: String, thread: String, text: String, username: String? = nil, asUser: Bool? = nil, parse: ParseMode? = nil, linkNames: Bool? = nil, attachments: [Attachment?]? = nil, unfurlLinks: Bool? = nil, unfurlMedia: Bool? = nil, iconURL: String? = nil, iconEmoji: String? = nil, success: (((ts: String?, channel: String?))->Void)?, failure: FailureClosure?) {
+        let parameters: [String: Any?] = ["token": token, "channel": channel, "thread_ts": thread, "text": text.slackFormatEscaping, "as_user": asUser, "parse": parse?.rawValue, "link_names": linkNames, "unfurl_links": unfurlLinks, "unfurlMedia": unfurlMedia, "username": username, "icon_url": iconURL, "icon_emoji": iconEmoji, "attachments": encodeAttachments(attachments)]
+        networkInterface.request(.chatPostMessage, parameters: parameters, successClosure: {(response) in
+            success?((ts: response["ts"] as? String, response["channel"] as? String))
+        }) {(error) in
+            failure?(error)
+        }
+    }
+    
     public func sendMeMessage(channel: String, text: String, success: (((ts: String?, channel: String?))->Void)?, failure: FailureClosure?) {
         let parameters: [String: Any?] = ["token": token, "channel": channel, "text": text.slackFormatEscaping]
         networkInterface.request(.chatMeMessage, parameters: parameters, successClosure: {(response) in
