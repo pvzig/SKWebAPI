@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		26A2E62B1EEB26C3005C25AC /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A2E62A1EEB26C3005C25AC /* Endpoint.swift */; };
+		26A2E62C1EEB26C3005C25AC /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A2E62A1EEB26C3005C25AC /* Endpoint.swift */; };
+		26A2E62D1EEB26C3005C25AC /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A2E62A1EEB26C3005C25AC /* Endpoint.swift */; };
 		26D1C4C21EE462DC00C95954 /* SKCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26D1C4C11EE462DC00C95954 /* SKCore.framework */; };
 		26D1C4C61EE463A600C95954 /* SKCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26D1C4C51EE463A600C95954 /* SKCore.framework */; };
 		26D1C4C81EE463AD00C95954 /* SKCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26D1C4C71EE463AD00C95954 /* SKCore.framework */; };
@@ -23,6 +26,7 @@
 		2684F1E41E95ABD400536DCC /* SKWebAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SKWebAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2684F2081E95ABD600536DCC /* SKWebAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SKWebAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2684F20D1E95AF8C00536DCC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		26A2E62A1EEB26C3005C25AC /* Endpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		26D1C4C11EE462DC00C95954 /* SKCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SKCore.framework; path = Carthage/Build/Mac/SKCore.framework; sourceTree = "<group>"; };
 		26D1C4C51EE463A600C95954 /* SKCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SKCore.framework; path = Carthage/Build/iOS/SKCore.framework; sourceTree = "<group>"; };
 		26D1C4C71EE463AD00C95954 /* SKCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SKCore.framework; path = Carthage/Build/tvOS/SKCore.framework; sourceTree = "<group>"; };
@@ -110,6 +114,7 @@
 			children = (
 				26DC0EA51E95BB5D00991BDF /* NetworkInterface.swift */,
 				26DC0EA61E95BB5D00991BDF /* WebAPI.swift */,
+				26A2E62A1EEB26C3005C25AC /* Endpoint.swift */,
 			);
 			path = Sources;
 			sourceTree = SOURCE_ROOT;
@@ -149,6 +154,7 @@
 				2684F1791E95AA6900536DCC /* Frameworks */,
 				2684F17A1E95AA6900536DCC /* Headers */,
 				2684F17B1E95AA6900536DCC /* Resources */,
+				26A2E62E1EEB27AB005C25AC /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -167,6 +173,7 @@
 				2684F1DE1E95ABD400536DCC /* Frameworks */,
 				2684F1DF1E95ABD400536DCC /* Headers */,
 				2684F1E01E95ABD400536DCC /* Resources */,
+				26A2E62F1EEB27CB005C25AC /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -185,6 +192,7 @@
 				2684F2021E95ABD600536DCC /* Frameworks */,
 				2684F2031E95ABD600536DCC /* Headers */,
 				2684F2041E95ABD600536DCC /* Resources */,
+				26A2E6301EEB27D8005C25AC /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -259,12 +267,58 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		26A2E62E1EEB27AB005C25AC /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+		};
+		26A2E62F1EEB27CB005C25AC /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+		};
+		26A2E6301EEB27D8005C25AC /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		2684F1781E95AA6900536DCC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				26DC0EA71E95BB5D00991BDF /* NetworkInterface.swift in Sources */,
+				26A2E62B1EEB26C3005C25AC /* Endpoint.swift in Sources */,
 				26DC0EAA1E95BB5D00991BDF /* WebAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -274,6 +328,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26DC0EA81E95BB5D00991BDF /* NetworkInterface.swift in Sources */,
+				26A2E62C1EEB26C3005C25AC /* Endpoint.swift in Sources */,
 				26DC0EAB1E95BB5D00991BDF /* WebAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -283,6 +338,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26DC0EA91E95BB5D00991BDF /* NetworkInterface.swift in Sources */,
+				26A2E62D1EEB26C3005C25AC /* Endpoint.swift in Sources */,
 				26DC0EAC1E95BB5D00991BDF /* WebAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

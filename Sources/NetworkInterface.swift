@@ -22,19 +22,24 @@
 // THE SOFTWARE.
 
 #if os(Linux)
-import Dispatch
+    import Dispatch
 #endif
 import Foundation
 import SKCore
 
 public struct NetworkInterface {
-    
+
     private let apiUrl = "https://slack.com/api/"
     private let session = URLSession(configuration: .default)
-    
+
     internal init() {}
-    
-    internal func request(_ endpoint: Endpoint, parameters: [String: Any?], successClosure: @escaping ([String: Any])->Void, errorClosure: @escaping (SlackError)->Void) {
+
+    internal func request(
+        _ endpoint: Endpoint,
+        parameters: [String: Any?],
+        successClosure: @escaping ([String: Any]) -> Void,
+        errorClosure: @escaping (SlackError) -> Void
+    ) {
         var components = URLComponents(string: "\(apiUrl)\(endpoint.rawValue)")
         if parameters.count > 0 {
             components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
@@ -44,7 +49,7 @@ public struct NetworkInterface {
             return
         }
         let request = URLRequest(url: url)
-        
+
         session.dataTask(with: request) {(data, response, publicError) in
             do {
                 successClosure(try NetworkInterface.handleResponse(data, response: response, publicError: publicError))
@@ -53,7 +58,7 @@ public struct NetworkInterface {
             }
         }.resume()
     }
-    
+
     //Adapted from https://gist.github.com/erica/baa8a187a5b4796dab27
     internal func synchronusRequest(_ endpoint: Endpoint, parameters: [String: Any?]) -> [String: Any]? {
         var components = URLComponents(string: "\(apiUrl)\(endpoint.rawValue)")
@@ -78,8 +83,13 @@ public struct NetworkInterface {
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         return try? NetworkInterface.handleResponse(data, response: response, publicError: error)
     }
-    
-    internal func customRequest(_ url: String, data: Data, success: @escaping (Bool)->Void, errorClosure: @escaping (SlackError)->Void) {
+
+    internal func customRequest(
+        _ url: String,
+        data: Data,
+        success: @escaping (Bool) -> Void,
+        errorClosure: @escaping (SlackError) -> Void
+    ) {
         guard let string = url.removingPercentEncoding, let url =  URL(string: string) else {
             errorClosure(SlackError.clientNetworkError)
             return
@@ -89,8 +99,8 @@ public struct NetworkInterface {
         let contentType = "application/json"
         request.setValue(contentType, forHTTPHeaderField: "Content-Type")
         request.httpBody = data
-        
-        session.dataTask(with: request) {(data, response, publicError) in
+
+        session.dataTask(with: request) {(_, _, publicError) in
             if publicError == nil {
                 success(true)
             } else {
@@ -98,13 +108,21 @@ public struct NetworkInterface {
             }
         }.resume()
     }
-    
-    internal func uploadRequest(data: Data, parameters: [String: Any?], successClosure: @escaping ([String: Any])->Void, errorClosure: @escaping (SlackError)->Void) {
+
+    internal func uploadRequest(
+        data: Data,
+        parameters: [String: Any?],
+        successClosure: @escaping ([String: Any]) -> Void, errorClosure: @escaping (SlackError) -> Void
+    ) {
         var components = URLComponents(string: "\(apiUrl)\(Endpoint.filesUpload.rawValue)")
         if parameters.count > 0 {
             components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
         }
-        guard let url = components?.url, let filename = parameters["filename"] as? String, let filetype = parameters["filetype"] as? String else {
+        guard
+            let url = components?.url,
+            let filename = parameters["filename"] as? String,
+            let filetype = parameters["filetype"] as? String
+        else {
             errorClosure(SlackError.clientNetworkError)
             return
         }
@@ -116,22 +134,27 @@ public struct NetworkInterface {
         let boundaryEnd = "--\(boundaryConstant)--\r\n"
         let contentDispositionString = "Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n"
         let contentTypeString = "Content-Type: \(filetype)\r\n\r\n"
-        
-        guard let boundaryStartData = boundaryStart.data(using: .utf8), let dispositionData = contentDispositionString.data(using: .utf8), let contentTypeData = contentTypeString.data(using: .utf8), let boundaryEndData = boundaryEnd.data(using: .utf8) else {
+
+        guard
+            let boundaryStartData = boundaryStart.data(using: .utf8),
+            let dispositionData = contentDispositionString.data(using: .utf8),
+            let contentTypeData = contentTypeString.data(using: .utf8),
+            let boundaryEndData = boundaryEnd.data(using: .utf8)
+        else {
             errorClosure(SlackError.clientNetworkError)
             return
         }
-        
+
         var requestBodyData = Data()
         requestBodyData.append(contentsOf: boundaryStartData)
         requestBodyData.append(contentsOf: dispositionData)
         requestBodyData.append(contentsOf: contentTypeData)
         requestBodyData.append(contentsOf: data)
         requestBodyData.append(contentsOf: boundaryEndData)
-        
+
         request.setValue(contentType, forHTTPHeaderField: "Content-Type")
         request.httpBody = requestBodyData as Data
-        
+
         session.dataTask(with: request) {(data, response, publicError) in
             do {
                 successClosure(try NetworkInterface.handleResponse(data, response: response, publicError: publicError))
@@ -140,7 +163,7 @@ public struct NetworkInterface {
             }
         }.resume()
     }
-    
+
     internal static func handleResponse(_ data: Data?, response: URLResponse?, publicError: Error?) throws -> [String: Any] {
         guard let data = data, let response = response as? HTTPURLResponse else {
             throw SlackError.clientNetworkError
@@ -149,10 +172,10 @@ public struct NetworkInterface {
             guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
                 throw SlackError.clientJSONError
             }
-            
+
             switch response.statusCode {
             case 200:
-                if (json["ok"] as! Bool == true) {
+                if json["ok"] as? Bool == true {
                     return json
                 } else {
                     if let errorString = json["error"] as? String {
@@ -174,7 +197,7 @@ public struct NetworkInterface {
             }
         }
     }
-    
+
     private func randomBoundary() -> String {
         #if os(Linux)
             return "slackkit.boundary.\(Int(random()))\(Int(random()))"
@@ -182,8 +205,8 @@ public struct NetworkInterface {
             return "slackkit.boundary.\(arc4random())\(arc4random())"
         #endif
     }
-    
-    //MARK: - Filter Nil Parameters
+
+    // MARK: - Filter Nil Parameters
     private func filterNilParameters(_ parameters: [String: Any?]) -> [String: Any] {
         var finalParameters = [String: Any]()
         for (key, value) in parameters {
