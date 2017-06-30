@@ -66,7 +66,7 @@ import SKWebAPI
 Initialize an instance of `SKWebAPI` with a Slack auth token and make your requests:
 
 ```swift
-let webAPI = SKWebAPI(token: xoxp-SLACK_AUTH_TOKEN)
+let webAPI = WebAPI(token: xoxp-SLACK_AUTH_TOKEN)
 webAPI.authenticationTest(success: { (success) in
 	print(success)
 }, failure: nil)
