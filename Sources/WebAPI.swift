@@ -782,12 +782,16 @@ extension WebAPI {
         }
     }
 
+    private enum ReactionItemType: String {
+        case file, comment, message
+    }
+
     public func getReactionsForFile(_ file: String, full: Bool = true, reactions: (([Reaction]) -> Void)?, failure: FailureClosure?) {
-        getReactionsForItem(file, full: full, itemKey: "file", reactions: reactions, failure: failure)
+        getReactionsForItem(file, full: full, type: .file, reactions: reactions, failure: failure)
     }
 
     public func getReactionsForComment(_ comment: String, full: Bool = true, reactions: (([Reaction]) -> Void)?, failure: FailureClosure?) {
-        getReactionsForItem(comment: comment, full: full, itemKey: "file", reactions: reactions, failure: failure)
+        getReactionsForItem(comment: comment, full: full, type: .comment, reactions: reactions, failure: failure)
     }
 
     public func getReactionsForMessage(
@@ -797,7 +801,7 @@ extension WebAPI {
         reactions: (([Reaction]) -> Void)?,
         failure: FailureClosure?
     ) {
-        getReactionsForItem(channel: channel, timestamp: timestamp, full: full, itemKey: "message", reactions: reactions, failure: failure)
+        getReactionsForItem(channel: channel, timestamp: timestamp, full: full, type: .message, reactions: reactions, failure: failure)
     }
 
     private func getReactionsForItem(
@@ -806,7 +810,7 @@ extension WebAPI {
         channel: String? = nil,
         timestamp: String? = nil,
         full: Bool,
-        itemKey: String,
+        type: ReactionItemType,
         reactions: (([Reaction]) -> Void)?,
         failure: FailureClosure?
     ) {
@@ -819,11 +823,21 @@ extension WebAPI {
             "full": full
         ]
         networkInterface.request(.reactionsGet, parameters: parameters, successClosure: {(response) in
-            guard let item = response[itemKey] as? [[String: Any]] else {
+            guard let item = response[type.rawValue] as? [String: Any] else {
                 reactions?([])
                 return
             }
-            reactions?(item.map({ Reaction(reaction: $0) }))
+            switch type {
+            case .message:
+                let message = Message(dictionary: item)
+                reactions?(message.reactions)
+            case .file:
+                let file = File(file: item)
+                reactions?(file.reactions)
+            case .comment:
+                let comment = Comment(comment: item)
+                reactions?(comment.reactions)
+            }
         }) {(error) in
             failure?(error)
         }
