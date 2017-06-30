@@ -781,6 +781,76 @@ extension WebAPI {
             failure?(error)
         }
     }
+
+    public func getReactionsForFile(_ file: String, full: Bool = true, reactions: (([Reaction]) -> Void)?, failure: FailureClosure?) {
+        getReactionsForItem(file, full: full, itemKey: "file", reactions: reactions, failure: failure)
+    }
+
+    public func getReactionsForComment(_ comment: String, full: Bool = true, reactions: (([Reaction]) -> Void)?, failure: FailureClosure?) {
+        getReactionsForItem(comment: comment, full: full, itemKey: "file", reactions: reactions, failure: failure)
+    }
+
+    public func getReactionsForMessage(
+        _ channel: String,
+        timestamp: String,
+        full: Bool = true,
+        reactions: (([Reaction]) -> Void)?,
+        failure: FailureClosure?
+    ) {
+        getReactionsForItem(channel: channel, timestamp: timestamp, full: full, itemKey: "message", reactions: reactions, failure: failure)
+    }
+
+    private func getReactionsForItem(
+        _ file: String? = nil,
+        comment: String? = nil,
+        channel: String? = nil,
+        timestamp: String? = nil,
+        full: Bool,
+        itemKey: String,
+        reactions: (([Reaction]) -> Void)?,
+        failure: FailureClosure?
+    ) {
+        let parameters: [String: Any?] = [
+            "token": token,
+            "file": file,
+            "file_comment": comment,
+            "channel": channel,
+            "timestamp": timestamp,
+            "full": full
+        ]
+        networkInterface.request(.reactionsGet, parameters: parameters, successClosure: {(response) in
+            guard let item = response[itemKey] as? [[String: Any]] else {
+                reactions?([])
+                return
+            }
+            reactions?(item.map({ Reaction(reaction: $0) }))
+        }) {(error) in
+            failure?(error)
+        }
+    }
+
+    public func reactionsListForUser(
+        _ user: String? = nil,
+        full: Bool = true,
+        count: Int = 100,
+        page: Int = 1,
+        success: ((_ items: [Item]?) -> Void)?,
+        failure: FailureClosure?
+    ) {
+        let parameters: [String: Any?] = [
+            "token": token,
+            "user": user,
+            "full": full,
+            "count": count,
+            "page": page
+        ]
+        networkInterface.request(.reactionsList, parameters: parameters, successClosure: {(response) in
+            let items = response["items"] as? [[String: Any]]
+            success?(items?.map({ Item(item: $0) }))
+        }) {(error) in
+            failure?(error)
+        }
+    }
 }
 
 // MARK: - Stars
