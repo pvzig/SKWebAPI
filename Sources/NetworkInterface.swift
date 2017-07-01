@@ -134,12 +134,14 @@ public struct NetworkInterface {
         let boundaryEnd = "--\(boundaryConstant)--\r\n"
         let contentDispositionString = "Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n"
         let contentTypeString = "Content-Type: \(filetype)\r\n\r\n"
+        let dataEnd = "\r\n"
 
         guard
             let boundaryStartData = boundaryStart.data(using: .utf8),
             let dispositionData = contentDispositionString.data(using: .utf8),
             let contentTypeData = contentTypeString.data(using: .utf8),
-            let boundaryEndData = boundaryEnd.data(using: .utf8)
+            let boundaryEndData = boundaryEnd.data(using: .utf8),
+            let dataEndData = dataEnd.data(using: .utf8)
         else {
             errorClosure(SlackError.clientNetworkError)
             return
@@ -150,6 +152,7 @@ public struct NetworkInterface {
         requestBodyData.append(contentsOf: dispositionData)
         requestBodyData.append(contentsOf: contentTypeData)
         requestBodyData.append(contentsOf: data)
+        requestBodyData.append(contentsOf: dataEndData)
         requestBodyData.append(contentsOf: boundaryEndData)
 
         request.setValue(contentType, forHTTPHeaderField: "Content-Type")
