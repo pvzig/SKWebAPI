@@ -130,33 +130,8 @@ public struct NetworkInterface {
         request.httpMethod = "POST"
         let boundaryConstant = randomBoundary()
         let contentType = "multipart/form-data; boundary=" + boundaryConstant
-        let boundaryStart = "--\(boundaryConstant)\r\n"
-        let boundaryEnd = "--\(boundaryConstant)--\r\n"
-        let contentDispositionString = "Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n"
-        let contentTypeString = "Content-Type: \(filetype)\r\n\r\n"
-        let dataEnd = "\r\n"
-
-        guard
-            let boundaryStartData = boundaryStart.data(using: .utf8),
-            let dispositionData = contentDispositionString.data(using: .utf8),
-            let contentTypeData = contentTypeString.data(using: .utf8),
-            let boundaryEndData = boundaryEnd.data(using: .utf8),
-            let dataEndData = dataEnd.data(using: .utf8)
-        else {
-            errorClosure(SlackError.clientNetworkError)
-            return
-        }
-
-        var requestBodyData = Data()
-        requestBodyData.append(contentsOf: boundaryStartData)
-        requestBodyData.append(contentsOf: dispositionData)
-        requestBodyData.append(contentsOf: contentTypeData)
-        requestBodyData.append(contentsOf: data)
-        requestBodyData.append(contentsOf: dataEndData)
-        requestBodyData.append(contentsOf: boundaryEndData)
-
         request.setValue(contentType, forHTTPHeaderField: "Content-Type")
-        request.httpBody = requestBodyData as Data
+        request.httpBody = requestBodyData(data: data, boundaryConstant: boundaryConstant, filename: filename, filetype: filetype)
 
         session.dataTask(with: request) {(data, response, publicError) in
             do {
@@ -199,6 +174,33 @@ public struct NetworkInterface {
                 throw SlackError.unknownError
             }
         }
+    }
+
+    private func requestBodyData(data: Data, boundaryConstant: String, filename: String, filetype: String) -> Data? {
+        let boundaryStart = "--\(boundaryConstant)\r\n"
+        let boundaryEnd = "--\(boundaryConstant)--\r\n"
+        let contentDispositionString = "Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n"
+        let contentTypeString = "Content-Type: \(filetype)\r\n\r\n"
+        let dataEnd = "\r\n"
+
+        guard
+            let boundaryStartData = boundaryStart.data(using: .utf8),
+            let dispositionData = contentDispositionString.data(using: .utf8),
+            let contentTypeData = contentTypeString.data(using: .utf8),
+            let boundaryEndData = boundaryEnd.data(using: .utf8),
+            let dataEndData = dataEnd.data(using: .utf8)
+        else {
+            return nil
+        }
+
+        var requestBodyData = Data()
+        requestBodyData.append(contentsOf: boundaryStartData)
+        requestBodyData.append(contentsOf: dispositionData)
+        requestBodyData.append(contentsOf: contentTypeData)
+        requestBodyData.append(contentsOf: data)
+        requestBodyData.append(contentsOf: dataEndData)
+        requestBodyData.append(contentsOf: boundaryEndData)
+        return requestBodyData
     }
 
     private func randomBoundary() -> String {

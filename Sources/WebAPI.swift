@@ -141,8 +141,13 @@ extension WebAPI {
         }
     }
 
-    public func channelsList(excludeArchived: Bool = false, success: ((_ channels: [[String: Any]]?) -> Void)?, failure: FailureClosure?) {
-        list(.channelsList, type:.channel, excludeArchived: excludeArchived, success: {(channels) in
+    public func channelsList(
+        excludeArchived: Bool = false,
+        excludeMembers: Bool = false,
+        success: ((_ channels: [[String: Any]]?) -> Void)?,
+        failure: FailureClosure?
+    ) {
+        list(.channelsList, type:.channel, excludeArchived: excludeArchived, excludeMembers: excludeMembers, success: {(channels) in
             success?(channels)
         }) {(error) in
             failure?(error)
@@ -473,8 +478,13 @@ extension WebAPI {
         }
     }
 
-    public func groupsList(excludeArchived: Bool = false, success: ((_ channels: [[String: Any]]?) -> Void)?, failure: FailureClosure?) {
-        list(.groupsList, type:.group, excludeArchived: excludeArchived, success: {(channels) in
+    public func groupsList(
+        excludeArchived: Bool = false,
+        excludeMembers: Bool = false,
+        success: ((_ channels: [[String: Any]]?) -> Void)?,
+        failure: FailureClosure?
+    ) {
+        list(.groupsList, type:.group, excludeArchived: excludeArchived, excludeMembers: excludeMembers, success: {(channels) in
             success?(channels)
         }) {(error) in
             failure?(error)
@@ -549,8 +559,13 @@ extension WebAPI {
         }
     }
 
-    public func imsList(excludeArchived: Bool = false, success: ((_ channels: [[String: Any]]?) -> Void)?, failure: FailureClosure?) {
-        list(.imList, type:.im, excludeArchived: excludeArchived, success: {(channels) in
+    public func imsList(
+        excludeArchived: Bool = false,
+        excludeMembers: Bool = false,
+        success: ((_ channels: [[String: Any]]?) -> Void)?,
+        failure: FailureClosure?
+    ) {
+        list(.imList, type:.im, excludeArchived: excludeArchived, excludeMembers: excludeMembers, success: {(channels) in
             success?(channels)
         }) {(error) in
             failure?(error)
@@ -610,8 +625,13 @@ extension WebAPI {
         }
     }
 
-    public func mpimsList(excludeArchived: Bool = false, success: ((_ channels: [[String: Any]]?) -> Void)?, failure: FailureClosure?) {
-        list(.mpimList, type:.group, excludeArchived: excludeArchived, success: {(channels) in
+    public func mpimsList(
+        excludeArchived: Bool = false,
+        excludeMembers: Bool = false,
+        success: ((_ channels: [[String: Any]]?) -> Void)?,
+        failure: FailureClosure?
+    ) {
+        list(.mpimList, type:.group, excludeArchived: excludeArchived, excludeMembers: excludeMembers, success: {(channels) in
             success?(channels)
         }) {(error) in
             failure?(error)
@@ -1096,10 +1116,11 @@ extension WebAPI {
         _ endpoint: Endpoint,
         type: ChannelType,
         excludeArchived: Bool = false,
+        excludeMembers: Bool = false,
         success: ((_ channels: [[String: Any]]?) -> Void)?,
         failure: FailureClosure?
     ) {
-        let parameters: [String: Any] = ["token": token, "exclude_archived": excludeArchived]
+        let parameters: [String: Any] = ["token": token, "exclude_archived": excludeArchived, "exclude_members": excludeMembers]
         networkInterface.request(endpoint, parameters: parameters, successClosure: {(response) in
             success?(response[type.rawValue+"s"] as? [[String: Any]])
         }) {(error) in
