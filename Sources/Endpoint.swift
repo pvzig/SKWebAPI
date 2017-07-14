@@ -70,6 +70,7 @@ public enum Endpoint: String {
     case reactionsList = "reactions.list"
     case reactionsRemove = "reactions.remove"
     case rtmStart = "rtm.start"
+    case rtmConnect = "rtm.connect"
     case starsAdd = "stars.add"
     case starsRemove = "stars.remove"
     case teamInfo = "team.info"

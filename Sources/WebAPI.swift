@@ -64,18 +64,51 @@ public final class WebAPI {
 extension WebAPI {
     public static func rtmStart(
         token: String,
-        simpleLatest: Bool? = nil,
-        noUnreads: Bool? = nil,
+        batchPresenceAware: Bool = false,
         mpimAware: Bool? = nil,
+        noLatest: Bool = false,
+        noUnreads: Bool? = nil,
+        presenceSub: Bool = false,
+        simpleLatest: Bool? = nil,
         success: ((_ response: [String: Any]) -> Void)?,
         failure: FailureClosure?
     ) {
-        let parameters: [String: Any?] = ["token": token, "simple_latest": simpleLatest, "no_unreads": noUnreads, "mpim_aware": mpimAware]
+        let parameters: [String: Any?] =
+            [
+                "token": token,
+                "batch_presence_aware": batchPresenceAware,
+                "mpim_aware": mpimAware,
+                "no_latest": noLatest,
+                "no_unreads": noUnreads,
+                "presence_sub": presenceSub,
+                "simple_latest": simpleLatest
+        ]
         NetworkInterface().request(.rtmStart, parameters: parameters, successClosure: {(response) in
             success?(response)
         }) {(error) in
             failure?(error)
         }
+    }
+
+    public static func rtmConnect(
+        token: String,
+        batchPresenceAware: Bool = false,
+        presenceSub: Bool = false,
+        success: ((_ response: [String: Any]) -> Void)?,
+        failure: FailureClosure?
+    ) {
+        let parameters: [String: Any?] =
+            [
+                "token": token,
+                "batch_presence_aware": batchPresenceAware,
+                "presence_sub": presenceSub
+            ]
+        NetworkInterface().request(.rtmConnect, parameters: parameters, successClosure: {(response) in
+            success?(response)
+        }) {(error) in
+            failure?(error)
+        }
+
     }
 }
 
