@@ -6,6 +6,6 @@ let package = Package(
         Target(name: "SKWebAPI")
     ],
     dependencies: [
-        .Package(url: "https://github.com/SlackKit/SKCore", "4.0.0")
+        .Package(url: "https://github.com/SlackKit/SKCore", majorVersion: 4)
     ]
 )
