@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "SKWebAPI"
-  s.version          = "4.0.4"
+  s.version          = "4.0.3"
   s.summary          = "A Swift library to help make requests to the Slack Web API"
   s.homepage         = "https://github.com/SlackKit/SKWebAPI"
   s.license          = 'MIT'
