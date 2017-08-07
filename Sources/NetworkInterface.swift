@@ -40,11 +40,7 @@ public struct NetworkInterface {
         successClosure: @escaping ([String: Any]) -> Void,
         errorClosure: @escaping (SlackError) -> Void
     ) {
-        var components = URLComponents(string: "\(apiUrl)\(endpoint.rawValue)")
-        if parameters.count > 0 {
-            components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
-        }
-        guard let url = components?.url else {
+        guard let url = self.url(for: endpoint, parameters: parameters) else {
             errorClosure(SlackError.clientNetworkError)
             return
         }
@@ -61,11 +57,7 @@ public struct NetworkInterface {
 
     //Adapted from https://gist.github.com/erica/baa8a187a5b4796dab27
     internal func synchronusRequest(_ endpoint: Endpoint, parameters: [String: Any?]) -> [String: Any]? {
-        var components = URLComponents(string: "\(apiUrl)\(endpoint.rawValue)")
-        if parameters.count > 0 {
-            components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
-        }
-        guard let url = components?.url else {
+        guard let url = self.url(for: endpoint, parameters: parameters) else {
             return nil
         }
         let request = URLRequest(url: url)
@@ -114,12 +106,8 @@ public struct NetworkInterface {
         parameters: [String: Any?],
         successClosure: @escaping ([String: Any]) -> Void, errorClosure: @escaping (SlackError) -> Void
     ) {
-        var components = URLComponents(string: "\(apiUrl)\(Endpoint.filesUpload.rawValue)")
-        if parameters.count > 0 {
-            components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
-        }
         guard
-            let url = components?.url,
+            let url = self.url(for: Endpoint.filesUpload, parameters: parameters),
             let filename = parameters["filename"] as? String,
             let filetype = parameters["filetype"] as? String
         else {
@@ -176,6 +164,24 @@ public struct NetworkInterface {
         }
     }
 
+    private func url(for endpoint: Endpoint, parameters: [String: Any?]) -> URL? {
+        var components = URLComponents(string: "\(apiUrl)\(endpoint.rawValue)")
+        if parameters.count > 0 {
+            components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
+        }
+        
+        // As discussed http://www.openradar.me/24076063 and https://stackoverflow.com/a/37314144/407523, Apple considers
+        // a + and ? as valid characters in a URL query string, but Slack has recently started enforcing that they be
+        // encoded when included in a query string. As a result, we need to manually apply the encoding after Apple's
+        // default encoding is applied.
+        var encodedQuery = components?.percentEncodedQuery
+        encodedQuery = encodedQuery?.replacingOccurrences(of: "?", with: "%3F")
+        encodedQuery = encodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        components?.percentEncodedQuery = encodedQuery
+        
+        return components?.url
+    }
+    
     private func requestBodyData(data: Data, boundaryConstant: String, filename: String, filetype: String) -> Data? {
         let boundaryStart = "--\(boundaryConstant)\r\n"
         let boundaryEnd = "--\(boundaryConstant)--\r\n"
