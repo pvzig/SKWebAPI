@@ -40,7 +40,7 @@ public struct NetworkInterface {
         successClosure: @escaping ([String: Any]) -> Void,
         errorClosure: @escaping (SlackError) -> Void
     ) {
-        guard let url = self.url(for: endpoint, parameters: parameters) else {
+        guard let url = requestURL(for: endpoint, parameters: parameters) else {
             errorClosure(SlackError.clientNetworkError)
             return
         }
@@ -57,7 +57,7 @@ public struct NetworkInterface {
 
     //Adapted from https://gist.github.com/erica/baa8a187a5b4796dab27
     internal func synchronusRequest(_ endpoint: Endpoint, parameters: [String: Any?]) -> [String: Any]? {
-        guard let url = self.url(for: endpoint, parameters: parameters) else {
+        guard let url = requestURL(for: endpoint, parameters: parameters) else {
             return nil
         }
         let request = URLRequest(url: url)
@@ -107,7 +107,7 @@ public struct NetworkInterface {
         successClosure: @escaping ([String: Any]) -> Void, errorClosure: @escaping (SlackError) -> Void
     ) {
         guard
-            let url = self.url(for: Endpoint.filesUpload, parameters: parameters),
+            let url = requestURL(for: .filesUpload, parameters: parameters),
             let filename = parameters["filename"] as? String,
             let filetype = parameters["filetype"] as? String
         else {
@@ -164,7 +164,7 @@ public struct NetworkInterface {
         }
     }
 
-    private func url(for endpoint: Endpoint, parameters: [String: Any?]) -> URL? {
+    private func requestURL(for endpoint: Endpoint, parameters: [String: Any?]) -> URL? {
         var components = URLComponents(string: "\(apiUrl)\(endpoint.rawValue)")
         if parameters.count > 0 {
             components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
