@@ -84,6 +84,8 @@ SlackKit currently supports the a subset of the Slack Web API that is available 
 | `channels.info`|
 | `channels.list`|
 | `channels.mark`|
+| `channels.create`|
+| `channels.invite`|
 | `channels.setPurpose`|
 | `channels.setTopic`|
 | `chat.delete`|
@@ -132,4 +134,3 @@ SlackKit currently supports the a subset of the Slack Web API that is available 
 | `users.list`|
 | `users.setActive`|
 | `users.setPresence`|
-

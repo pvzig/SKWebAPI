@@ -29,6 +29,8 @@ public enum Endpoint: String {
     case channelsInfo = "channels.info"
     case channelsList = "channels.list"
     case channelsMark = "channels.mark"
+    case channelsCreate = "channels.create"
+    case channelsInvite = "channels.invite"
     case channelsSetPurpose = "channels.setPurpose"
     case channelsSetTopic = "channels.setTopic"
     case chatDelete = "chat.delete"
