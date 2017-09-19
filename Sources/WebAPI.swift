@@ -195,6 +195,14 @@ extension WebAPI {
         }
     }
 
+    public func createChannel(channel: String, success: ChannelClosure?, failure: FailureClosure?) {
+        create(.channelsCreate, name: channel, success: success, failure: failure)
+    }
+
+    public func inviteToChannel(_ channelID: String, userID: String, success: SuccessClosure?, failure: FailureClosure?) {
+        invite(.channelsInvite, channelID: channelID, userID: userID, success: success, failure: failure)
+    }
+
     public func setChannelPurpose(channel: String, purpose: String, success: SuccessClosure?, failure: FailureClosure?) {
         setInfo(.channelsSetPurpose, type: .purpose, channel: channel, text: purpose, success: {(purposeSet) in
             success?(purposeSet)
@@ -1186,6 +1194,35 @@ extension WebAPI {
     ) {
         let parameters: [String: Any] = ["token": token, "channel": channel, type.rawValue: text]
         networkInterface.request(endpoint, parameters: parameters, successClosure: { _ in
+            success?(true)
+        }) {(error) in
+            failure?(error)
+        }
+    }
+
+    fileprivate func create(
+        _ endpoint: Endpoint,
+        name: String,
+        success: ChannelClosure?,
+        failure: FailureClosure?
+    ) {
+        let parameters: [String: Any] = ["token": token, "name": name]
+        networkInterface.request(endpoint, parameters: parameters, successClosure: {(response) in
+            success?(Channel(channel: response["channel"] as? [String: Any]))
+        }) {(error) in
+            failure?(error)
+        }
+    }
+
+    fileprivate func invite(
+        _ endpoint: Endpoint,
+        channelID: String,
+        userID: String,
+        success: SuccessClosure?,
+        failure: FailureClosure?
+    ) {
+        let parameters: [String: Any] = ["token": token, "channel": channelID, "user": userID]
+        networkInterface.request(endpoint, parameters: parameters, successClosure: {(response) in
             success?(true)
         }) {(error) in
             failure?(error)
