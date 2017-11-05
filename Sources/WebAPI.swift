@@ -234,6 +234,7 @@ extension WebAPI {
     public func sendMessage(
         channel: String,
         text: String,
+        escapeCharacters: Bool = true,
         username: String? = nil,
         asUser: Bool? = nil,
         parse: ParseMode? = nil,
@@ -249,7 +250,7 @@ extension WebAPI {
         let parameters: [String: Any?] = [
             "token": token,
             "channel": channel,
-            "text": text.slackFormatEscaping,
+            "text": escapeCharacters ? text.slackFormatEscaping : text,
             "as_user": asUser,
             "parse": parse?.rawValue,
             "link_names": linkNames,
@@ -271,6 +272,7 @@ extension WebAPI {
         channel: String,
         thread: String,
         text: String,
+        escapeCharacters: Bool = true,
         broadcastReply: Bool = false,
         username: String? = nil,
         asUser: Bool? = nil,
@@ -288,7 +290,7 @@ extension WebAPI {
             "token": token,
             "channel": channel,
             "thread_ts": thread,
-            "text": text.slackFormatEscaping,
+            "text": escapeCharacters ? text.slackFormatEscaping : text,
             "broadcastReply": broadcastReply,
             "as_user": asUser,
             "parse": parse?.rawValue,
@@ -310,10 +312,11 @@ extension WebAPI {
     public func sendMeMessage(
         channel: String,
         text: String,
+        escapeCharacters: Bool = true,
         success: (((ts: String?, channel: String?)) -> Void)?,
         failure: FailureClosure?
     ) {
-        let parameters: [String: Any?] = ["token": token, "channel": channel, "text": text.slackFormatEscaping]
+        let parameters: [String: Any?] = ["token": token, "channel": channel, "text": escapeCharacters ? text.slackFormatEscaping : text]
         networkInterface.request(.chatMeMessage, parameters: parameters, successClosure: {(response) in
             success?((ts: response["ts"] as? String, response["channel"] as? String))
         }) {(error) in
@@ -328,6 +331,7 @@ extension WebAPI {
         attachments: [Attachment?]? = nil,
         parse: ParseMode = .none,
         linkNames: Bool = false,
+        escapeCharacters: Bool = true,
         success: SuccessClosure?,
         failure: FailureClosure?
     ) {
@@ -335,7 +339,7 @@ extension WebAPI {
             "token": token,
             "channel": channel,
             "ts": ts,
-            "text": message.slackFormatEscaping,
+            "text": escapeCharacters ? message.slackFormatEscaping : message,
             "parse": parse.rawValue,
             "link_names": linkNames,
             "attachments": encodeAttachments(attachments)
