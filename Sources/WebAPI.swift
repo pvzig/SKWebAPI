@@ -34,6 +34,7 @@ public final class WebAPI {
     public typealias MessageClosure = (_ message: Message) -> Void
     public typealias HistoryClosure = (_ history: History) -> Void
     public typealias FileClosure = (_ file: File) -> Void
+    public typealias ItemsClosure = (_ items: [Item]?) -> Void
 
     public enum InfoType: String {
         case purpose, topic
@@ -199,8 +200,8 @@ extension WebAPI {
         create(.channelsCreate, name: channel, success: success, failure: failure)
     }
 
-    public func inviteToChannel(_ channelID: String, userID: String, success: SuccessClosure?, failure: FailureClosure?) {
-        invite(.channelsInvite, channelID: channelID, userID: userID, success: success, failure: failure)
+    public func inviteToChannel(_ channel: String, user: String, success: SuccessClosure?, failure: FailureClosure?) {
+        invite(.channelsInvite, channel: channel, user: user, success: success, failure: failure)
     }
 
     public func setChannelPurpose(channel: String, purpose: String, success: SuccessClosure?, failure: FailureClosure?) {
@@ -704,6 +705,23 @@ extension WebAPI {
 
 // MARK: - Pins
 extension WebAPI {
+    public func pinsList(
+        channel: String,
+        success: ItemsClosure?,
+        failure: FailureClosure?
+    ) {
+        let parameters: [String: Any?] = [
+            "token": token,
+            "channel": channel
+        ]
+        networkInterface.request(.pinsList, parameters: parameters, successClosure: { response in
+            let items = response["items"] as? [[String: Any]]
+            success?(items?.map({ Item(item: $0) }))
+        }) {(error) in
+            failure?(error)
+        }
+    }
+
     public func pinItem(
         channel: String,
         file: String? = nil,
@@ -913,7 +931,7 @@ extension WebAPI {
         full: Bool = true,
         count: Int = 100,
         page: Int = 1,
-        success: ((_ items: [Item]?) -> Void)?,
+        success: ItemsClosure?,
         failure: FailureClosure?
     ) {
         let parameters: [String: Any?] = [
@@ -1220,12 +1238,12 @@ extension WebAPI {
 
     fileprivate func invite(
         _ endpoint: Endpoint,
-        channelID: String,
-        userID: String,
+        channel: String,
+        user: String,
         success: SuccessClosure?,
         failure: FailureClosure?
     ) {
-        let parameters: [String: Any] = ["token": token, "channel": channelID, "user": userID]
+        let parameters: [String: Any] = ["token": token, "channel": channel, "user": user]
         networkInterface.request(endpoint, parameters: parameters, successClosure: {(response) in
             success?(true)
         }) {(error) in
