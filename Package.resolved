@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SKCore",
+        "repositoryURL": "https://github.com/SlackKit/SKCore",
+        "state": {
+          "branch": null,
+          "revision": "a5fc6bb9ed9cd24a1b7fc3f7b3b23180f23c3282",
+          "version": "4.0.4"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
