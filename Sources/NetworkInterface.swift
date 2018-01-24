@@ -169,7 +169,7 @@ public struct NetworkInterface {
         if parameters.count > 0 {
             components?.queryItems = filterNilParameters(parameters).map { URLQueryItem(name: $0.0, value: "\($0.1)") }
         }
-        
+
         // As discussed http://www.openradar.me/24076063 and https://stackoverflow.com/a/37314144/407523, Apple considers
         // a + and ? as valid characters in a URL query string, but Slack has recently started enforcing that they be
         // encoded when included in a query string. As a result, we need to manually apply the encoding after Apple's
@@ -178,10 +178,10 @@ public struct NetworkInterface {
         encodedQuery = encodedQuery?.replacingOccurrences(of: "?", with: "%3F")
         encodedQuery = encodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         components?.percentEncodedQuery = encodedQuery
-        
+
         return components?.url
     }
-    
+
     private func requestBodyData(data: Data, boundaryConstant: String, filename: String, filetype: String) -> Data? {
         let boundaryStart = "--\(boundaryConstant)\r\n"
         let boundaryEnd = "--\(boundaryConstant)--\r\n"

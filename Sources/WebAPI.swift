@@ -34,6 +34,7 @@ public final class WebAPI {
     public typealias MessageClosure = (_ message: Message) -> Void
     public typealias HistoryClosure = (_ history: History) -> Void
     public typealias FileClosure = (_ file: File) -> Void
+    public typealias ItemsClosure = (_ items: [Item]?) -> Void
 
     public enum InfoType: String {
         case purpose, topic
@@ -199,8 +200,8 @@ extension WebAPI {
         create(.channelsCreate, name: channel, success: success, failure: failure)
     }
 
-    public func inviteToChannel(_ channelID: String, userID: String, success: SuccessClosure?, failure: FailureClosure?) {
-        invite(.channelsInvite, channelID: channelID, userID: userID, success: success, failure: failure)
+    public func inviteToChannel(_ channel: String, user: String, success: SuccessClosure?, failure: FailureClosure?) {
+        invite(.channelsInvite, channel: channel, user: user, success: success, failure: failure)
     }
 
     public func setChannelPurpose(channel: String, purpose: String, success: SuccessClosure?, failure: FailureClosure?) {
@@ -234,6 +235,7 @@ extension WebAPI {
     public func sendMessage(
         channel: String,
         text: String,
+        escapeCharacters: Bool = true,
         username: String? = nil,
         asUser: Bool? = nil,
         parse: ParseMode? = nil,
@@ -249,7 +251,7 @@ extension WebAPI {
         let parameters: [String: Any?] = [
             "token": token,
             "channel": channel,
-            "text": text.slackFormatEscaping,
+            "text": escapeCharacters ? text.slackFormatEscaping : text,
             "as_user": asUser,
             "parse": parse?.rawValue,
             "link_names": linkNames,
@@ -271,6 +273,7 @@ extension WebAPI {
         channel: String,
         thread: String,
         text: String,
+        escapeCharacters: Bool = true,
         broadcastReply: Bool = false,
         username: String? = nil,
         asUser: Bool? = nil,
@@ -288,7 +291,7 @@ extension WebAPI {
             "token": token,
             "channel": channel,
             "thread_ts": thread,
-            "text": text.slackFormatEscaping,
+            "text": escapeCharacters ? text.slackFormatEscaping : text,
             "broadcastReply": broadcastReply,
             "as_user": asUser,
             "parse": parse?.rawValue,
@@ -310,10 +313,11 @@ extension WebAPI {
     public func sendMeMessage(
         channel: String,
         text: String,
+        escapeCharacters: Bool = true,
         success: (((ts: String?, channel: String?)) -> Void)?,
         failure: FailureClosure?
     ) {
-        let parameters: [String: Any?] = ["token": token, "channel": channel, "text": text.slackFormatEscaping]
+        let parameters: [String: Any?] = ["token": token, "channel": channel, "text": escapeCharacters ? text.slackFormatEscaping : text]
         networkInterface.request(.chatMeMessage, parameters: parameters, successClosure: {(response) in
             success?((ts: response["ts"] as? String, response["channel"] as? String))
         }) {(error) in
@@ -328,6 +332,7 @@ extension WebAPI {
         attachments: [Attachment?]? = nil,
         parse: ParseMode = .none,
         linkNames: Bool = false,
+        escapeCharacters: Bool = true,
         success: SuccessClosure?,
         failure: FailureClosure?
     ) {
@@ -335,7 +340,7 @@ extension WebAPI {
             "token": token,
             "channel": channel,
             "ts": ts,
-            "text": message.slackFormatEscaping,
+            "text": escapeCharacters ? message.slackFormatEscaping : message,
             "parse": parse.rawValue,
             "link_names": linkNames,
             "attachments": encodeAttachments(attachments)
@@ -700,6 +705,23 @@ extension WebAPI {
 
 // MARK: - Pins
 extension WebAPI {
+    public func pinsList(
+        channel: String,
+        success: ItemsClosure?,
+        failure: FailureClosure?
+    ) {
+        let parameters: [String: Any?] = [
+            "token": token,
+            "channel": channel
+        ]
+        networkInterface.request(.pinsList, parameters: parameters, successClosure: { response in
+            let items = response["items"] as? [[String: Any]]
+            success?(items?.map({ Item(item: $0) }))
+        }) {(error) in
+            failure?(error)
+        }
+    }
+
     public func pinItem(
         channel: String,
         file: String? = nil,
@@ -909,7 +931,7 @@ extension WebAPI {
         full: Bool = true,
         count: Int = 100,
         page: Int = 1,
-        success: ((_ items: [Item]?) -> Void)?,
+        success: ItemsClosure?,
         failure: FailureClosure?
     ) {
         let parameters: [String: Any?] = [
@@ -1216,13 +1238,13 @@ extension WebAPI {
 
     fileprivate func invite(
         _ endpoint: Endpoint,
-        channelID: String,
-        userID: String,
+        channel: String,
+        user: String,
         success: SuccessClosure?,
         failure: FailureClosure?
     ) {
-        let parameters: [String: Any] = ["token": token, "channel": channelID, "user": userID]
-        networkInterface.request(endpoint, parameters: parameters, successClosure: {(response) in
+        let parameters: [String: Any] = ["token": token, "channel": channel, "user": user]
+        networkInterface.request(endpoint, parameters: parameters, successClosure: { _ in
             success?(true)
         }) {(error) in
             failure?(error)
