@@ -10,7 +10,7 @@ let package = Package(
     	.package(url: "https://github.com/SlackKit/SKCore", .upToNextMinor(from: "4.1.0"))
     ],
     targets: [
-    	.target(name: "SKWebAPI", 
+    	.target(name: "SKWebAPI",
         dependencies: ["SKCore"],
     			path: "Sources")
     ]

@@ -1244,7 +1244,7 @@ extension WebAPI {
         failure: FailureClosure?
     ) {
         let parameters: [String: Any] = ["token": token, "channel": channel, "user": user]
-        networkInterface.request(endpoint, parameters: parameters, successClosure: {(response) in
+        networkInterface.request(endpoint, parameters: parameters, successClosure: { _ in
             success?(true)
         }) {(error) in
             failure?(error)
