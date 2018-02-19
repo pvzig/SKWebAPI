@@ -35,6 +35,7 @@ public final class WebAPI {
     public typealias HistoryClosure = (_ history: History) -> Void
     public typealias FileClosure = (_ file: File) -> Void
     public typealias ItemsClosure = (_ items: [Item]?) -> Void
+    public typealias AuthTestClosure = (_ user: String?, _ team: String?) -> Void
 
     public enum InfoType: String {
         case purpose, topic
@@ -115,9 +116,9 @@ extension WebAPI {
 
 // MARK: - Auth
 extension WebAPI {
-    public func authenticationTest(success: SuccessClosure?, failure: FailureClosure?) {
-        networkInterface.request(.authTest, parameters: ["token": token], successClosure: { _ in
-            success?(true)
+    public func authenticationTest(success: AuthTestClosure?, failure: FailureClosure?) {
+        networkInterface.request(.authTest, parameters: ["token": token], successClosure: { (response) in
+            success?(response["user_id"] as? String, response["team_id"] as? String)
         }) {(error) in
             failure?(error)
         }
