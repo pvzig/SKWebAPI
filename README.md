@@ -67,8 +67,8 @@ Initialize an instance of `SKWebAPI` with a Slack auth token and make your reque
 
 ```swift
 let webAPI = WebAPI(token: xoxp-SLACK_AUTH_TOKEN)
-webAPI.authenticationTest(success: { (success) in
-	print(success)
+webAPI.authenticationTest(success: { (user, team) in
+	print("\(user) - \(team)")
 }, failure: nil)
 ```
 
