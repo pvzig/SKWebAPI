@@ -1108,7 +1108,7 @@ extension WebAPI {
         cursor: String? = nil,
         limit: Int? = nil,
         types: [ConversationType]? = nil,
-        success: ((_ channels: [[String: Any]]?) -> Void)?,
+        success: ((_ channels: [[String: Any]]?, _ nextCursor: String?) -> Void)?,
         failure: FailureClosure?
     ) {
         var parameters: [String: Any] = ["token": token, "exclude_archived": excludeArchived]
@@ -1122,7 +1122,7 @@ extension WebAPI {
             parameters["types"] = types.map({ $0.rawValue }).joined(separator: ",")
         }
         networkInterface.request(.conversationsList, parameters: parameters, successClosure: {(response) in
-            success?(response["channels"] as? [[String: Any]])
+            success?(response["channels"] as? [[String: Any]], (response["response_metadata"] as? [String: Any])?["next_cursor"] as? String)
         }) {(error) in
             failure?(error)
         }
