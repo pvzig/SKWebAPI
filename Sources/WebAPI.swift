@@ -53,6 +53,10 @@ public final class WebAPI {
         case channel, group, im
     }
 
+    public enum ConversationType: String {
+        case public_channel, private_channel, mpim, im
+    }
+
     fileprivate let networkInterface: NetworkInterface
     fileprivate let token: String
 
@@ -1103,7 +1107,7 @@ extension WebAPI {
         excludeArchived: Bool = false,
         cursor: String? = nil,
         limit: Int? = nil,
-        types: [String]? = nil,
+        types: [ConversationType]? = nil,
         success: ((_ channels: [[String: Any]]?) -> Void)?,
         failure: FailureClosure?
     ) {
@@ -1115,7 +1119,7 @@ extension WebAPI {
             parameters["limit"] = limit
         }
         if let types = types {
-            parameters["types"] = types.joined(separator: ",")
+            parameters["types"] = types.map({ $0.rawValue }).joined(separator: ",")
         }
         networkInterface.request(.conversationsList, parameters: parameters, successClosure: {(response) in
             success?(response["channels"] as? [[String: Any]])
