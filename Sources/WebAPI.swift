@@ -1097,6 +1097,34 @@ extension WebAPI {
     }
 }
 
+// MARK: - Conversations
+extension WebAPI {
+    public func conversationsList(
+        excludeArchived: Bool = false,
+        cursor: String? = nil,
+        limit: Int? = nil,
+        types: [String]? = nil,
+        success: ((_ channels: [[String: Any]]?) -> Void)?,
+        failure: FailureClosure?
+    ) {
+        var parameters: [String: Any] = ["token": token, "exclude_archived": excludeArchived]
+        if let cursor = cursor {
+            parameters["cursor"] = cursor
+        }
+        if let limit = limit {
+            parameters["limit"] = limit
+        }
+        if let types = types {
+            parameters["types"] = types.joined(separator: ",")
+        }
+        networkInterface.request(.conversationsList, parameters: parameters, successClosure: {(response) in
+            success?(response["channels"] as? [[String: Any]])
+        }) {(error) in
+            failure?(error)
+        }
+    }
+}
+
 // MARK: - Utilities
 extension WebAPI {
     fileprivate func encodeAttachments(_ attachments: [Attachment?]?) -> String? {
