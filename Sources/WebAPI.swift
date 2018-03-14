@@ -236,7 +236,6 @@ extension WebAPI {
     public func sendMessage(
         channel: String,
         text: String,
-        escapeCharacters: Bool = true,
         username: String? = nil,
         asUser: Bool? = nil,
         parse: ParseMode? = nil,
@@ -252,7 +251,7 @@ extension WebAPI {
         let parameters: [String: Any?] = [
             "token": token,
             "channel": channel,
-            "text": escapeCharacters ? text.slackFormatEscaping : text,
+            "text": text,
             "as_user": asUser,
             "parse": parse?.rawValue,
             "link_names": linkNames,
@@ -274,7 +273,6 @@ extension WebAPI {
         channel: String,
         thread: String,
         text: String,
-        escapeCharacters: Bool = true,
         broadcastReply: Bool = false,
         username: String? = nil,
         asUser: Bool? = nil,
@@ -292,7 +290,7 @@ extension WebAPI {
             "token": token,
             "channel": channel,
             "thread_ts": thread,
-            "text": escapeCharacters ? text.slackFormatEscaping : text,
+            "text": text,
             "broadcastReply": broadcastReply,
             "as_user": asUser,
             "parse": parse?.rawValue,
@@ -314,11 +312,10 @@ extension WebAPI {
     public func sendMeMessage(
         channel: String,
         text: String,
-        escapeCharacters: Bool = true,
         success: (((ts: String?, channel: String?)) -> Void)?,
         failure: FailureClosure?
     ) {
-        let parameters: [String: Any?] = ["token": token, "channel": channel, "text": escapeCharacters ? text.slackFormatEscaping : text]
+        let parameters: [String: Any?] = ["token": token, "channel": channel, "text":  text]
         networkInterface.request(.chatMeMessage, parameters: parameters, successClosure: {(response) in
             success?((ts: response["ts"] as? String, response["channel"] as? String))
         }) {(error) in
@@ -333,7 +330,6 @@ extension WebAPI {
         attachments: [Attachment?]? = nil,
         parse: ParseMode = .none,
         linkNames: Bool = false,
-        escapeCharacters: Bool = true,
         success: SuccessClosure?,
         failure: FailureClosure?
     ) {
@@ -341,7 +337,7 @@ extension WebAPI {
             "token": token,
             "channel": channel,
             "ts": ts,
-            "text": escapeCharacters ? message.slackFormatEscaping : message,
+            "text": message,
             "parse": parse.rawValue,
             "link_names": linkNames,
             "attachments": encodeAttachments(attachments)
@@ -456,7 +452,7 @@ extension WebAPI {
 // MARK: - File Comments
 extension WebAPI {
     public func addFileComment(fileID: String, comment: String, success: CommentClosure?, failure: FailureClosure?) {
-        let parameters: [String: Any] = ["token": token, "file": fileID, "comment": comment.slackFormatEscaping]
+        let parameters: [String: Any] = ["token": token, "file": fileID, "comment": comment]
         networkInterface.request(.filesCommentsAdd, parameters: parameters, successClosure: {(response) in
             success?(Comment(comment: response["comment"] as? [String: Any]))
         }) {(error) in
@@ -465,7 +461,7 @@ extension WebAPI {
     }
 
     public func editFileComment(fileID: String, commentID: String, comment: String, success: CommentClosure?, failure: FailureClosure?) {
-        let parameters: [String: Any] = ["token": token, "file": fileID, "id": commentID, "comment": comment.slackFormatEscaping]
+        let parameters: [String: Any] = ["token": token, "file": fileID, "id": commentID, "comment": comment]
         networkInterface.request(.filesCommentsEdit, parameters: parameters, successClosure: {(response) in
             success?(Comment(comment: response["comment"] as? [String: Any]))
         }) {(error) in
