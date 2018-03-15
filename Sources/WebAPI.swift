@@ -53,6 +53,10 @@ public final class WebAPI {
         case channel, group, im
     }
 
+    public enum ConversationType: String {
+        case public_channel, private_channel, mpim, im
+    }
+
     fileprivate let networkInterface: NetworkInterface
     fileprivate let token: String
 
@@ -1091,6 +1095,34 @@ extension WebAPI {
         let parameters: [String: Any] = ["token": token, "presence": presence.rawValue]
         networkInterface.request(.usersSetPresence, parameters: parameters, successClosure: { _ in
             success?(true)
+        }) {(error) in
+            failure?(error)
+        }
+    }
+}
+
+// MARK: - Conversations
+extension WebAPI {
+    public func conversationsList(
+        excludeArchived: Bool = false,
+        cursor: String? = nil,
+        limit: Int? = nil,
+        types: [ConversationType]? = nil,
+        success: ((_ channels: [[String: Any]]?, _ nextCursor: String?) -> Void)?,
+        failure: FailureClosure?
+    ) {
+        var parameters: [String: Any] = ["token": token, "exclude_archived": excludeArchived]
+        if let cursor = cursor {
+            parameters["cursor"] = cursor
+        }
+        if let limit = limit {
+            parameters["limit"] = limit
+        }
+        if let types = types {
+            parameters["types"] = types.map({ $0.rawValue }).joined(separator: ",")
+        }
+        networkInterface.request(.conversationsList, parameters: parameters, successClosure: {(response) in
+            success?(response["channels"] as? [[String: Any]], (response["response_metadata"] as? [String: Any])?["next_cursor"] as? String)
         }) {(error) in
             failure?(error)
         }
