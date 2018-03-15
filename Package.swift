@@ -7,7 +7,7 @@ let package = Package(
         .library(name: "SKWebAPI", targets: ["SKWebAPI"])
     ],
     dependencies: [
-    	.package(url: "https://github.com/NoRespect/SKCore", .branch("master"))
+    	.package(url: "https://github.com/SlackKit/SKCore", .upToNextMinor(from: "4.1.0"))
     ],
     targets: [
     	.target(name: "SKWebAPI",
