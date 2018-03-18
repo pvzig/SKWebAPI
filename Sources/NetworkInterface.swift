@@ -175,6 +175,10 @@ public struct NetworkInterface {
         // encoded when included in a query string. As a result, we need to manually apply the encoding after Apple's
         // default encoding is applied.
         var encodedQuery = components?.percentEncodedQuery
+        encodedQuery = encodedQuery?.replacingOccurrences(of: ">", with: "%3E")
+        encodedQuery = encodedQuery?.replacingOccurrences(of: "<", with: "%3C")
+        encodedQuery = encodedQuery?.replacingOccurrences(of: "@", with: "%40")
+
         encodedQuery = encodedQuery?.replacingOccurrences(of: "?", with: "%3F")
         encodedQuery = encodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         components?.percentEncodedQuery = encodedQuery
