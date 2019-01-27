@@ -1,11 +1,4 @@
-# SKWebAPI: SlackKit Web API Module
-![Swift Version](https://img.shields.io/badge/Swift-4.0.3-orange.svg)
-![Plaforms](https://img.shields.io/badge/Platforms-macOS,iOS,tvOS,Linux-lightgrey.svg)
-![License MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)
-[![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-brightgreen.svg)](https://github.com/apple/swift-package-manager)
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-brightgreen.svg)](https://github.com/Carthage/Carthage)
-[![CocoaPods compatible](https://img.shields.io/badge/CocoaPods-compatible-brightgreen.svg)](https://cocoapods.org)
-
+# SKWebAPI has been consolidated into [SlackKit](https://www.github.com/pvzig/SlackKit)
 A Swift module to help make requests to the [Slack Web API](https://api.slack.com/web).
 
 ## Installation
@@ -30,7 +23,7 @@ pod install
 Add SKWebAPI to your Cartfile:
 
 ```
-github "SlackKit/SKWebAPI"
+github "pvzig/SKWebAPI"
 ```
 and run
 
@@ -49,7 +42,7 @@ import PackageDescription
   
 let package = Package(
 	dependencies: [
-		.package(url: "https://github.com/SlackKit/SKWebAPI.git", .upToNextMinor(from: "4.1.0"))
+		.package(url: "https://github.com/pvzig/SKWebAPI.git", .upToNextMinor(from: "4.1.0"))
 	]
 )
 ```
