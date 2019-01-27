@@ -2,10 +2,10 @@ Pod::Spec.new do |s|
   s.name                    = "SKWebAPI"
   s.version                 = "4.1.3"
   s.summary                 = "A Swift library to help make requests to the Slack Web API"
-  s.homepage                = "https://github.com/SlackKit/SKWebAPI"
+  s.homepage                = "https://github.com/pvzig/SKWebAPI"
   s.license                 = 'MIT'
   s.author                  = { "Peter Zignego" => "peter@launchsoft.co" }
-  s.source                  = { :git => "https://github.com/SlackKit/SKWebAPI.git", :tag => s.version.to_s }
+  s.source                  = { :git => "https://github.com/pvzig/SKWebAPI.git", :tag => s.version.to_s }
   s.social_media_url        = 'https://twitter.com/pvzig'
   s.swift_version           = '4.0'
   s.ios.deployment_target   = '9.0'
